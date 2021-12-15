@@ -7,7 +7,7 @@
   <br />
   <p>
     <a href="https://discord.js.org"><img src="https://img.shields.io/badge/Powered_by-PyCord-%235865F2?style=for-the-badge" alt="Bot Lib" /></a>
-    <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/license-Your_license-orange?style=for-the-badge" alt="License" /></a>
+    <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/license-Apache License v2-orange?style=for-the-badge" alt="License" /></a>
     <a href="https://discord.com/api/oauth2/authorize?client_id=804613612857327617&permissions=8&scope=bot%20applications.commands"><img src="https://img.shields.io/badge/Invite_now!-yellow?style=for-the-badge" alt="Bot Invite" /></a>
     <!--- Put your bots OAuth 2 invite in the href above --->
   </p>
