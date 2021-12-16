@@ -25,7 +25,8 @@ To Setup the bot for self hosting, Replace all the tokens and passwords to your 
 ## 💽 Install packages and running the bot
 To install the requirements:
 
-```py -m pip install requirements.txt
+```
+py -m pip install requirements.txt
 ```
 
 ## 👥 Author and contributors
