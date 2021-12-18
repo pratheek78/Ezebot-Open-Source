@@ -31,7 +31,7 @@ py -m pip install requirements.txt
 
 ## 👥 Author and contributors
 
-* [@pratheek78](https://github.com/pratheek78)
+* [@pratheek78](https://github.com/pratheek78)- Founder and Core Developer
 * Thanks to [@tonyG](https://github.com/tonyG433) for the readme template
 
 ## 🤝 Contributing
