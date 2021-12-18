@@ -81,7 +81,7 @@ class info(commands.Cog):
                 embed.add_field(name = name, value = value, inline =  inline)          
 
             embed.set_author(name = f'{ctx.author.name}')
-            embed.set_thumbnail(url = ctx.author.avatar.url)
+            embed.set_thumbnail(url = member.avatar.url)
 
             embed.set_footer(text = f"User ID: {member.id}")
             await ctx.send(embed=embed)
