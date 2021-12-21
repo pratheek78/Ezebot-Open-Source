@@ -6,15 +6,6 @@ from discord.ui.select import select
 from typing import Optional
 
 
-
-
-
-
-
-
-
-
-
 class HelpView(discord.ui.View):
     @discord.ui.select(placeholder='Select A Command Category Here', options=[
         discord.SelectOption(label='Moderation', description="Shows Info About All the moderation commands.",
