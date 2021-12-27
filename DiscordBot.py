@@ -1,15 +1,18 @@
 import discord, os, pymongo
+
+
 from discord.ext import commands
 from os import listdir, path
+from dotenv import load_dotenv
+
+load_dotenv()
+BASE_PATH = os.path.dirname(os.path.abspath(__file__))
+TOKEN = os.getenv('TOKEN')
+MONGOCONN = os.getenv('Mongo_conn')
 
 
-
-BASE_PATH = os.path.dirname(os.path.abspath(__file__)) #this uses a .sqlite file, not .db Also, theres a different database for cogs, and a different one for the main file. Helps in management.
-
-cl = pymongo.MongoClient()
+cl = pymongo.MongoClient(MONGOCONN)
 mdb = cl["Ezebot"]
-
-
 
 
 def get_prefix(client, message):
@@ -51,7 +54,6 @@ for cog in listdir(path.join(path.dirname(path.abspath(__file__)), "cogs")):
 
     else:
         print(f'unable to load {cog[:-3]}') #loads in all the cogs in the specified folder
-
 
 
 @client.event
@@ -97,9 +99,4 @@ async def prefix(ctx, prefix):
         result = "!"
 
 
-
-
-
-
-
-client.run('TOKEN')
+client.run(TOKEN)
