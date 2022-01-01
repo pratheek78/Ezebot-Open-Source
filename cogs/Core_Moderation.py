@@ -10,7 +10,7 @@ MONGOCONN = os.getenv('Mongo_conn')
 cl = pymongo.MongoClient(MONGOCONN)
 mdb = cl['Ezebot']
 modcoll = mdb['Modlogging']
-
+cur_date = str(datetime.date.today()) #Accessed in a lot of commands, so easier to put here instead of declaring every time
 
 class Coremod(commands.Cog):
     def __init__(self, client):
@@ -31,26 +31,40 @@ class Coremod(commands.Cog):
         else:
             lastcase = modcoll.find_one({'guild_id': ctx.message.guild.id})
             if lastcase is None:
-                post = {'guild_id': ctx.message.guild.id,
-                        'member_id': member.id,
-                        'moderator': ctx.author.id,
-                        'Operation': 'kick',
-                        'Case Number': 1,
-                        'Reason': reason}
-                modcoll.insert_one(post)
-            elif lastcase is not None:
-                lastcase_number = int(lastcase.get('Case Number'))
-                newcase_number = lastcase + 1
+                newcase_number = 1
                 post = {'guild_id': ctx.message.guild.id,
                         'member_id': member.id,
                         'moderator': ctx.author.id,
                         'Operation': 'kick',
                         'Case Number': newcase_number,
-                        'Reason': reason}
+                        'Reason': reason,
+                        'Date': cur_date}
                 modcoll.insert_one(post)
 
                 await ctx.guild.kick(user = member, reason = reason)
                 embed = discord.Embed(title = "Kick", description = f"{member.mention} Was kicked from the server\nReason: {reason}", colour = discord.Colour.red())
+                embed.set_footer(text = f'Case Number {newcase_number}')
+                await ctx.send(embed=embed)
+                await member.send(f"You were Kicked from {ctx.guild.name}.\nReason: {reason}\nResponsible Moderator: {ctx.author.name}")
+            elif lastcase is not None:   
+                list(modcoll.find({'guild_id': ctx.message.guild.id}).sort("Case Number", pymongo.DESCENDING).limit(1))
+                             
+                last_num = str([ sub['Case Number'] for sub in lastcase ])
+                last_num = last_num.lstrip("[").rstrip("]")
+                last_num = int(last_num)
+                newcase_number = last_num + 1
+                post = {'guild_id': ctx.message.guild.id,
+                        'member_id': member.id,
+                        'moderator': ctx.author.id,
+                        'Operation': 'kick',
+                        'Case Number': newcase_number,
+                        'Reason': reason,
+                        'Date': cur_date}
+                modcoll.insert_one(post)
+
+                await ctx.guild.kick(user = member, reason = reason)
+                embed = discord.Embed(title = "Kick", description = f"{member.mention} Was kicked from the server\nReason: {reason}", colour = discord.Colour.red())
+                embed.set_footer(text = f'Case Number {newcase_number}')
                 await ctx.send(embed=embed)
                 await member.send(f"You were Kicked from {ctx.guild.name}.\nReason: {reason}\nResponsible Moderator: {ctx.author.name}")
 
@@ -69,33 +83,47 @@ class Coremod(commands.Cog):
         else:
             lastcase = modcoll.find_one({'guild_id': ctx.message.guild.id})
             if lastcase is None:
-                post = {'guild_id': ctx.message.guild.id,
-                        'member_id': member.id,
-                        'moderator': ctx.author.id,
-                        'Operation': 'ban',
-                        'Case Number': 1,
-                        'Reason': reason}
-                modcoll.insert_one(post)
-            elif lastcase is not None:
-                lastcase_number = int(lastcase.get('Case Number'))
-                newcase_number = lastcase + 1
+                newcase_number = 1
                 post = {'guild_id': ctx.message.guild.id,
                         'member_id': member.id,
                         'moderator': ctx.author.id,
                         'Operation': 'ban',
                         'Case Number': newcase_number,
-                        'Reason': reason}
+                        'Reason': reason,
+                        'Date': cur_date}
                 modcoll.insert_one(post)
 
-            await ctx.guild.ban(user = member, reason = reason, delete_message_days = 0)
-            embed = discord.Embed(title = "Ban", description = f"{member.mention} Was banned from the server\nReason: {reason}", colour = discord.Colour.red())
-            await ctx.send(embed=embed)
-            await member.send(f"You were banned from {ctx.guild.name}.\nReason: {reason}\nResponsible Moderator: {ctx.author.name}")
+                await ctx.guild.ban(user = member, reason = reason, delete_message_days = 0)
+                embed = discord.Embed(title = "Ban", description = f"{member.mention} Was banned from the server\nReason: {reason}", colour = discord.Colour.red())
+                embed.set_footer(text=f'Case Number {newcase_number}')
+                await ctx.send(embed=embed)
+                await member.send(f"You were banned from {ctx.guild.name}.\nReason: {reason}\nResponsible Moderator: {ctx.author.name}")
+
+            elif lastcase is not None:
+                lastcase = list(modcoll.find({'guild_id': ctx.message.guild.id}).sort("Case Number", pymongo.DESCENDING).limit(1))
+                
+                last_num = str([ sub['Case Number'] for sub in lastcase ])
+                last_num = last_num.lstrip("[").rstrip("]")
+                last_num = int(last_num)
+                newcase_number = last_num + 1
+                post = {'guild_id': ctx.message.guild.id,
+                        'member_id': member.id,
+                        'moderator': ctx.author.id,
+                        'Operation': 'ban',
+                        'Case Number': newcase_number,
+                        'Reason': reason,
+                        'Date': cur_date}
+                modcoll.insert_one(post)
+
+                await ctx.guild.ban(user = member, reason = reason, delete_message_days = 0)
+                embed = discord.Embed(title = "Ban", description = f"{member.mention} Was banned from the server\nReason: {reason}", colour = discord.Colour.red())
+                embed.set_footer(text=f'Case Number {newcase_number}')
+                await ctx.send(embed=embed)
+                await member.send(f"You were banned from {ctx.guild.name}.\nReason: {reason}\nResponsible Moderator: {ctx.author.name}")
 
     @commands.command()
     @commands.has_permissions(manage_guild = True)
-    async def mute(self, ctx, member: discord.Member, time: Optional[str], reason = None):
-        guild = ctx.guild
+    async def mute(self, ctx, member: discord.Member, time: Optional[str], *, reason = None):
         time_convert = {"s": 1, "m": 60, "h": 3600, "d": 86400, 'mo': 2628288, 'y': 31536000}
         mutetime = int(time[0]) * time_convert[time[-1]]
         if member.top_role > ctx.author.top_role:
@@ -107,37 +135,56 @@ class Coremod(commands.Cog):
         elif member.top_role == ctx.author.top_role:
             embed = discord.Embed(title = "Can't Mute User", description = f"You can't Mute {member.mention}, as they have the same perms as you do.")
             await ctx.send(embed = embed)
+
         else:
             if time is None:
                 embed = discord.Embed(title = "Please state the time")
-                await ctx.send(embed = embed)
+                await ctx.send(embed = embed, delete_after = 5)
             else:
                 await member.timeout(until = discord.utils.utcnow() + datetime.timedelta(seconds = mutetime), reason = reason)
                 embed = discord.Embed(title = 'Mute', description = 'Muting member...')
                 m = await ctx.send(embed = embed)
                 lastcase = modcoll.find_one({'guild_id': ctx.message.guild.id})
+                
                 if lastcase is None:
-                    post = {'guild_id': ctx.message.guild.id,
-                            'member_id': member.id,
-                            'moderator': ctx.author.id,
-                            'Operation': 'mute',
-                            'Case Number': 1,
-                            'Reason': reason}
-                    modcoll.insert_one(post)
-                elif lastcase is not None:
-                    lastcase_number = int(lastcase.get('Case Number'))
-                    newcase_number = lastcase + 1
+                    newcase_number = 1
                     post = {'guild_id': ctx.message.guild.id,
                             'member_id': member.id,
                             'moderator': ctx.author.id,
                             'Operation': 'mute',
                             'Case Number': newcase_number,
-                            'Reason': reason}
+                            'Reason': reason,
+                            'Date': cur_date}
                     modcoll.insert_one(post)
-                new_em = discord.Embed(title = 'Muted Member', description = f'{member.mention} has been muted for {time}\n**Reason:** {reason}')
-                await m.edit(embed = embed)
-                dm_embed = discord.Embed(title = 'Mute', description = f'You have been muted in {ctx.guild} for {time}\n**Reason:** {reason}')
-                await member.send(embed = dm_embed)
+
+                    new_em = discord.Embed(title = 'Muted Member', description = f'{member.mention} has been muted for {time}\n**Reason:** {reason}')
+                    new_em.set_footer(text=f'Case Number {newcase_number}')
+                    await m.edit(embed = new_em)
+                    dm_embed = discord.Embed(title = 'Mute', description = f'You have been muted in {ctx.guild} for {time}\n**Reason:** {reason}')
+                    await member.send(embed = dm_embed)
+
+                elif lastcase is not None:
+                    lastcase = list(modcoll.find({'guild_id': ctx.message.guild.id}).sort("Case Number", pymongo.DESCENDING).limit(1))
+                    
+                    last_num = str([ sub['Case Number'] for sub in lastcase ])
+                    last_num = last_num.lstrip("[").rstrip("]")
+                    last_num = int(last_num)
+                    newcase_number = last_num + 1
+                    post = {'guild_id': ctx.message.guild.id,
+                            'member_id': member.id,
+                            'moderator': ctx.author.id,
+                            'Operation': 'mute',
+                            'Case Number': newcase_number,
+                            'Reason': reason,
+                            'Date': cur_date}
+                    modcoll.insert_one(post)
+
+                    new_em = discord.Embed(title = 'Muted Member', description = f'{member.mention} has been muted for {time}\n**Reason:** {reason}')
+                    new_em.set_footer(text=f'Case Number {newcase_number}')
+                    await m.edit(embed = new_em)
+                    dm_embed = discord.Embed(title = 'Mute', description = f'You have been muted in {ctx.guild} for {time}\n**Reason:** {reason}')
+                    await member.send(embed = dm_embed)
+
 
     @commands.command()
     @commands.has_permissions(manage_guild = True)
@@ -148,6 +195,51 @@ class Coremod(commands.Cog):
         dm_em = discord.Embed(title = 'Unmute', description = f'You have been unmuted in {ctx.guild}')
         await member.send(embed = dm_em)
 
+
+    @commands.command()
+    @commands.has_permissions(manage_guild = True)
+    async def delcase(self, ctx, case: int):
+        lastcase = modcoll.find_one({'guild_id': ctx.guild.id, 'Case Number': case})
+        if lastcase is None:
+            await ctx.send('This case does not exist')
+        else:
+            modcoll.delete_one(lastcase)
+            await ctx.send('Case Deleted')
+
+    @commands.command()
+    async def case(self, ctx, case: int):
+        req_case = modcoll.find_one({'guild_id': ctx.guild.id, 'Case Number': case})
+        if req_case is None:
+            await ctx.send('This case does not exist')
+        else:
+            vic_id = req_case.get('member_id')
+            mod_id = req_case.get('moderator')
+            op = req_case.get('Operation')
+            reason = req_case.get('Reason')
+            date = req_case.get('Date')
+            
+            vic = self.client.get_user(vic_id)
+            mod = self.client.get_user(mod_id)
+            
+            embed = discord.Embed(title = f'Case Number {case}',
+                                  description = f'**Member:** {vic}\n**Responsible Moderator:** {mod}\n**Operation:** {op}\n**Reason:** {reason}\n**Case:** {case}\n**Date:** {cur_date}',
+                                  colour = discord.Colour.blurple())
+            await ctx.send(embed = embed)
+
+    @commands.command()
+    async def logs(self, ctx, member: discord.Member):
+        if member is None:
+            embed = discord.Embed(description = '``Member`` is a required argument')
+            await ctx.send(embed = embed)
+        else:
+            cases_check = modcoll.find_one({'guild_id': ctx.guild.id, 'member_id': ctx.author.id})
+            if cases_check is None:
+                embed = discord.Embed(description = 'This Member does not have any cases')
+                await ctx.send(embed = embed)
+            else:
+                cases = list(modcoll.find({'guild_id': ctx.message.guild.id, 'member_id': ctx.author.id}))
+                print(cases)
+    
 
 def setup(client):
     client.add_cog(Coremod(client))
