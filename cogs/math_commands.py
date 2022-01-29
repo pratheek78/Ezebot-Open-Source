@@ -35,14 +35,14 @@ class MathCom(commands.Cog):
             await ctx.send(sol) 
 
         elif op == "hcf":
-            fprob = float(prob1)
-            fprob2 = float(prob2)
-            sol = math.gcd(fprob, fprob2)
+            iprob = int(prob1)
+            iprob2 = int(prob2) #Converted both variables to integers, since the gcd mathod requires integers and nothing else matters(yes, i used bad grammar here intentionally for mettalica reference "hehe")
+            sol = math.gcd(iprob, iprob2)
             await ctx.send(sol)
 
         elif op == "lcm":
-            fprob = float(prob1)
-            fprob2 = float(prob2)
+            fprob = int(prob1)
+            fprob2 = int(prob2) #Same as the above
             sol = math.lcm(fprob, fprob2)
             await ctx.send(sol)
 
@@ -62,7 +62,7 @@ class MathCom(commands.Cog):
             sol = math.sqrt(fprob)
             await ctx.send(sol)
 
-        elif op == "acos":
+        elif op == "acos": #Was going to add full trigonometry but got bored so ignore dis kek
             fprob = float(prob1)
             sol = math.acos(fprob)
             await ctx.send(sol)

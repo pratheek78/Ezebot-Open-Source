@@ -6,19 +6,21 @@ from discord.ui.select import select
 from typing import Optional
 
 
+
 class HelpView(discord.ui.View):
     @discord.ui.select(placeholder='Select A Command Category Here', options=[
         discord.SelectOption(label='Moderation', description="Shows Info About All the moderation commands.",
                              emoji='🔨', value='moderation'),
-        discord.SelectOption(label='Administration', description="Shows info about all the admin commands", emoji='⚙️',
+        discord.SelectOption(label='Administration', description="Shows info about all the admin commands", emoji='⚙',
                              value='admin'),
         discord.SelectOption(label='Information', description="Shows All the Info Commands", emoji='❓', value='info'),
         discord.SelectOption(label='Fun', description="Shows All the Fun Commands", emoji='🎠', value='fun'),
-        discord.SelectOption(label="Misc", description="Shows the Misc Commands", emoji='🎭', value='misc')
+        discord.SelectOption(label="Misc", description="Shows the Misc Commands", emoji='🎭', value='misc'),
+        discord.SelectOption(label="Counting", description="These are the commands to setup the counting", emoji="🔢", value='counting'),
     ])
     async def select_callback(self, select: discord.ui.Select, interaction: discord.Interaction):
         if select.values[0] == 'moderation':
-            moderation_embed = discord.Embed(title = 'Moderation', colour = discord.Colour.red())
+            moderation_embed = discord.Embed(title = 'Moderation', colour = discord.Colour.red(), description = f'To get info about a specific command and its usage, do ``!help [command]``')
             fields = [("``Kick``", 'Kicks the Specified Member', True),
                       ("``Ban``", "Bans the Specified Member", True),
                       ("``dban``", "Bans the Member and also deletes their past 24 hours of messages(to be fixed soon)", True),
@@ -27,17 +29,14 @@ class HelpView(discord.ui.View):
                       ("``goodname``", "Resets the member's nickname", True),
                       ("``Mute``", "Mutes the member. You might have to change channel permissions of a few staff roles for it to have an effect on them as well", False),
                       ("``Unmute``", "Unmutes the member", True),
-                      ("``Tempmute``", "Mutes the member and unmutes them automatically after the specified time.", True),
                       ("``Slowmode``", "Sets the channel slowmode", False)]
             for name, value, inline in fields:
                 moderation_embed.add_field(name = name, value = value, inline =  inline)
 
             await interaction.message.edit(embed=moderation_embed)  
-                    
 
-        
         elif select.values[0] == 'admin':
-            admin_embed = discord.Embed(title = 'Administration', colour = discord.Colour.orange())
+            admin_embed = discord.Embed(title = 'Administration', colour = discord.Colour.orange(), description = f'To get info about a specific command and its usage, do ``!help [command]``')
 
             fields = [("``addemoji``", "Adds an emoji", True),
                       ("``prefix``", "Changes the bot's prefix to the one specified", True),
@@ -53,10 +52,8 @@ class HelpView(discord.ui.View):
 
             await interaction.message.edit(embed=admin_embed)
 
-
-
         elif select.values[0] == 'info':
-            info_embed = discord.Embed(title = 'Information', colour = discord.Colour.green())
+            info_embed = discord.Embed(title = 'Information', colour = discord.Colour.green(), description = f'To get info about a specific command and its usage, do ``!help [command]``')
 
             fields = [("``serverinfo``", "Retrieves Info about the server", True),
                       ("``userinfo``", "Retrieves info about a user. Currently under development", True),
@@ -67,9 +64,8 @@ class HelpView(discord.ui.View):
 
             await interaction.message.edit(embed=info_embed)
 
-
         elif select.values[0] == 'fun':
-            fun_embed = discord.Embed(title = 'Fun', colour = discord.Colour.yellow())
+            fun_embed = discord.Embed(title = 'Fun', colour = discord.Colour.yellow(), description = f'To get info about a specific command and its usage, do ``!help [command]``')
 
             fields = [("``sus``", "Checks if the user is a sussy baka", True),
                       ("``roast``", "Sends a random roast", True),
@@ -86,7 +82,7 @@ class HelpView(discord.ui.View):
             await interaction.message.edit(embed=fun_embed)
 
         elif select.values[0] == 'misc':
-            misc_embed = discord.Embed(title = 'Misc', colour = discord.Colour.blurple())
+            misc_embed = discord.Embed(title = 'Misc', colour = discord.Colour.blurple(), description = f'To get info about a specific command and its usage, do ``!help [command]``')
 
             fields = [("``uptime``", "Shows how long the bot has been running for", True),
                       ("``invite``", "Invite the Bot to your server!", True),
@@ -100,7 +96,16 @@ class HelpView(discord.ui.View):
 
             await interaction.message.edit(embed=misc_embed)
 
+        elif select.values[0] == 'counting':
+            count_embed = discord.Embed(title = 'Counting', colour = discord.Colour.blurple(), description = f'To get info about a specific command and its usage, do ``!help [command]``')
 
+            fields = [("``set``", "Sets the current channel as counting channel", True),
+                      ("``remove``", "Removes the current channel as counting channel", True)]
+
+            for name, value, inline in fields:
+                count_embed.add_field(name = name, value = value, inline = inline)
+
+            await interaction.message.edit(embed = count_embed)
 
 
 class HelpCommand(commands.Cog):
@@ -236,6 +241,9 @@ class HelpCommand(commands.Cog):
                 view.add_item(button)
                 await ctx.send(embed = embed, view = view)
 
+            elif cmd == 'calc':
+                embed = discord.Embed(title = "calc", description = 'Calculates the solution of the given operation. Does not solve equations.\n\n**Operations:**\nround, absolute, factorial, floor, hcf, lcm, exp, power, sqrt, radians, degrees\n**Usage:**\n```!calc <operation> <first number> <if required, second number>```')
+                await ctx.send(embed = embed)
         
 
 

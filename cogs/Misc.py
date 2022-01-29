@@ -6,16 +6,10 @@ from discord.ext import commands
 import random
 from discord.member import Member
 import roasts
-from utils.roasts import roastsList
+from roasts import roastsList
 import datetime
 import time
 import math
-
-
-
-
-
-
 
 
 class Misc(commands.Cog):

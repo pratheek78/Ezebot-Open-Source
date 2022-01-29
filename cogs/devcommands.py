@@ -40,13 +40,17 @@ class devCommands(commands.Cog):
             await ctx.send("I do not have permission to do this!")
 
 
-    @commands.command(name="logout") #Will appreciate if someone fixed this!
+    @commands.command(name="logout")
     @commands.is_owner()
     async def logout(self, ctx):
         await ctx.send(f"Voiding process..")
         await self.client.logout()   
 
 
+    @commands.command()
+    @commands.is_owner()
+    async def total(self, ctx):
+        await ctx.send(len(self.client.users))
 
 
 

@@ -185,7 +185,6 @@ class Coremod(commands.Cog):
                     dm_embed = discord.Embed(title = 'Mute', description = f'You have been muted in {ctx.guild} for {time}\n**Reason:** {reason}')
                     await member.send(embed = dm_embed)
 
-
     @commands.command()
     @commands.has_permissions(manage_guild = True)
     async def unmute(self, ctx, member: discord.Member):
@@ -194,7 +193,6 @@ class Coremod(commands.Cog):
         await ctx.send(embed = embed)
         dm_em = discord.Embed(title = 'Unmute', description = f'You have been unmuted in {ctx.guild}')
         await member.send(embed = dm_em)
-
 
     @commands.command()
     @commands.has_permissions(manage_guild = True)
@@ -226,20 +224,9 @@ class Coremod(commands.Cog):
                                   colour = discord.Colour.blurple())
             await ctx.send(embed = embed)
 
-    @commands.command()
-    async def logs(self, ctx, member: discord.Member):
-        if member is None:
-            embed = discord.Embed(description = '``Member`` is a required argument')
-            await ctx.send(embed = embed)
-        else:
-            cases_check = modcoll.find_one({'guild_id': ctx.guild.id, 'member_id': ctx.author.id})
-            if cases_check is None:
-                embed = discord.Embed(description = 'This Member does not have any cases')
-                await ctx.send(embed = embed)
-            else:
-                cases = list(modcoll.find({'guild_id': ctx.message.guild.id, 'member_id': ctx.author.id}))
-                print(cases)
-    
+
+
+
 
 def setup(client):
     client.add_cog(Coremod(client))

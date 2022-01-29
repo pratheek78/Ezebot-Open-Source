@@ -2,14 +2,17 @@ import discord, os, pymongo
 
 from discord.ext import commands
 from typing import Optional
+from dotenv import load_dotenv
 
 
+load_dotenv()
 BASE_PATH = os.path.dirname(os.path.abspath(__file__))
+MONGOCONN = os.getenv('Mongo_conn')
 
-cl = pymongo.MongoClient("")
+cl = pymongo.MongoClient(MONGOCONN)
 mdb = cl["Ezebot"]
 mcol = mdb["ui_messages"]#outside the class since one event and one command use this same variable
-
+chancol = mdb["ignored_chan"]#same goes here
 
 
 class info(commands.Cog):
@@ -112,7 +115,7 @@ class info(commands.Cog):
                   ("Text Channels", len(ctx.guild.text_channels), False),
                   ("Voice Channels", len(ctx.guild.voice_channels), True),
                   ("Categories", len(ctx.guild.categories), True),
-                  ("Boosters", f' <a:nitor:905799243992825867> {ctx.guild.premium_subscription_count}', False), #The :nitor: thing is an emoji from a private server
+                  ("Boosters", f' <a:nitor:905799243992825867> {ctx.guild.premium_subscription_count}', False),
                   ("Verification Level", str(ctx.guild.verification_level).title(), False),
                   ("2FA Moderation", bool(ctx.guild.mfa_level), True),
                   ("Roles", len(ctx.guild.roles), False),
